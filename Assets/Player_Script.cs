@@ -65,7 +65,8 @@ public class Player_Script : MonoBehaviour {
 	//weapons stats
 	public int shotCount;
 
-	public GameObject leftGatGO, rightGatGO, leftRailGO, rightRailGO, leftShotGO, rightShotGO, leftSawGO, rightSawGO;
+	public GameObject[] leftGatGO, rightGatGO, leftRailGO, rightRailGO, leftShotGO, rightShotGO, leftSawGO, rightSawGO;
+	public Animator gatAnim, railAnim, shotAnim, sawAnim;
 
 	public WeaponModification gatMod, railMod, shotMod, sawMod;
 
@@ -115,6 +116,7 @@ public class Player_Script : MonoBehaviour {
 		shield = 100;
 		allEnemies = DetectEnemies ();
 		Invoke ("ConstructEnemyCounter", 0.5f);
+		DamagePlayer (0);
 	}
 	
 	// Update is called once per frame
@@ -123,6 +125,7 @@ public class Player_Script : MonoBehaviour {
 		UpdateUI();
 		BoostUpdate();
 		HeatUpdate ();
+
 	}
 
 	void FixedUpdate () {
@@ -134,6 +137,8 @@ public class Player_Script : MonoBehaviour {
 		if (homeBoundActive){
 			GoHome ();
 		}
+
+
 	}
 
 	private void ConstructEnemyCounter () {
@@ -158,9 +163,11 @@ public class Player_Script : MonoBehaviour {
 
 
 	private GameObject[] DetectEnemies () {
-		GameObject[] enemies = GameObject.FindGameObjectsWithTag ("Enemy");
-		GameObject[] otherEnemies = GameObject.FindGameObjectsWithTag ("Swarm");
-		GameObject[] combinedEnemies = enemies.Concat (otherEnemies).ToArray();
+		GameObject [] towers = GameObject.FindGameObjectsWithTag ("Tower");
+		GameObject [] swarms = GameObject.FindGameObjectsWithTag ("Swarm");
+		GameObject[] elites = GameObject.FindGameObjectsWithTag ("Elite");
+		GameObject[] towersAndSwarms = towers.Concat (swarms).ToArray();
+		GameObject[] combinedEnemies = towersAndSwarms.Concat (elites).ToArray ();
 		return combinedEnemies;
 	}
 
@@ -222,13 +229,20 @@ public class Player_Script : MonoBehaviour {
 			if (Input.GetButtonDown("Boost")){
 				boostActive = true;
 			}
-
+				
 			if (Input.GetButton("Fire1")){
 				FirePrimary ();
+			} else {
+				gatAnim.SetBool ("firing", false);
+				railAnim.SetBool ("firing", false);
+				shotAnim.SetBool ("firing", false);
+				sawAnim.SetBool ("firing", false);
 			}
 
 			if (Input.GetButton("Fire2")){
 				FireSecondary ();
+			} else {
+				
 			}
 		}
 
@@ -270,11 +284,20 @@ public class Player_Script : MonoBehaviour {
 			pShotButton.interactable = true;
 			pSawButton.interactable = true;
 
-			leftGatGO.SetActive (true);
+			foreach (GameObject g in leftGatGO) {
+				g.SetActive (true);
+			}
 
-			leftRailGO.SetActive (false);
-			leftShotGO.SetActive (false);
-			leftSawGO.SetActive (false);
+			foreach (GameObject g in leftRailGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftShotGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftSawGO) {
+				g.SetActive (false);
+			}
+
 			break;
 		case weaponTypes.RAIL:
 			pRailButton.interactable = false;
@@ -283,11 +306,20 @@ public class Player_Script : MonoBehaviour {
 			pShotButton.interactable = true;
 			pSawButton.interactable = true;
 
-			leftRailGO.SetActive (true);
 
-			leftGatGO.SetActive (false);
-			leftShotGO.SetActive (false);
-			leftSawGO.SetActive (false);
+			foreach (GameObject g in leftRailGO) {
+				g.SetActive (true);
+			}
+
+			foreach (GameObject g in leftGatGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftShotGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftSawGO) {
+				g.SetActive (false);
+			}
 			break;
 		case weaponTypes.SHOT:
 			pShotButton.interactable = false;
@@ -296,11 +328,19 @@ public class Player_Script : MonoBehaviour {
 			pRailButton.interactable = true;
 			pSawButton.interactable = true;
 
-			leftSawGO.SetActive (true);
+			foreach (GameObject g in leftShotGO) {
+				g.SetActive (true);
+			}
 
-			leftGatGO.SetActive (false);
-			leftRailGO.SetActive (false);
-			leftSawGO.SetActive (false);
+			foreach (GameObject g in leftRailGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftGatGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftSawGO) {
+				g.SetActive (false);
+			}
 			break;
 		case weaponTypes.SAW:
 			pSawButton.interactable = false;
@@ -309,11 +349,19 @@ public class Player_Script : MonoBehaviour {
 			pRailButton.interactable = true;
 			pShotButton.interactable = true;
 
-			leftSawGO.SetActive (true);
+			foreach (GameObject g in leftSawGO) {
+				g.SetActive (true);
+			}
 
-			leftGatGO.SetActive (false);
-			leftRailGO.SetActive (false);
-			leftShotGO.SetActive (false);
+			foreach (GameObject g in leftRailGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftShotGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in leftGatGO) {
+				g.SetActive (false);
+			}
 			break;
 		}
 	}
@@ -330,11 +378,21 @@ public class Player_Script : MonoBehaviour {
 			sShotButton.interactable = true;
 			sSawButton.interactable = true;
 
-			rightGatGO.SetActive (true);
 
-			rightRailGO.SetActive (false);
-			rightShotGO.SetActive (false);
-			rightSawGO.SetActive (false);
+			foreach (GameObject g in rightGatGO) {
+				g.SetActive (true);
+			}
+
+			foreach (GameObject g in rightRailGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightShotGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightSawGO) {
+				g.SetActive (false);
+			}
+
 			break;
 		case weaponTypes.RAIL:
 			sRailButton.interactable = false;
@@ -343,11 +401,21 @@ public class Player_Script : MonoBehaviour {
 			sShotButton.interactable = true;
 			sSawButton.interactable = true;
 
-			rightRailGO.SetActive (true);
 
-			rightGatGO.SetActive (false);
-			rightShotGO.SetActive (false);
-			rightSawGO.SetActive (false);
+			foreach (GameObject g in rightRailGO) {
+				g.SetActive (true);
+			}
+
+			foreach (GameObject g in rightGatGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightShotGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightSawGO) {
+				g.SetActive (false);
+			}
+
 			break;
 		case weaponTypes.SHOT:
 			sShotButton.interactable = false;
@@ -356,11 +424,21 @@ public class Player_Script : MonoBehaviour {
 			sRailButton.interactable = true;
 			sSawButton.interactable = true;
 
-			rightShotGO.SetActive (true);
 
-			rightGatGO.SetActive (false);
-			rightRailGO.SetActive (false);
-			rightSawGO.SetActive (false);
+			foreach (GameObject g in rightShotGO) {
+				g.SetActive (true);
+			}
+
+			foreach (GameObject g in rightRailGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightGatGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightSawGO) {
+				g.SetActive (false);
+			}
+
 			break;
 		case weaponTypes.SAW:
 			sSawButton.interactable = false;
@@ -369,11 +447,21 @@ public class Player_Script : MonoBehaviour {
 			sRailButton.interactable = true;
 			sShotButton.interactable = true;
 
-			rightSawGO.SetActive (true);
 
-			rightGatGO.SetActive (false);
-			rightRailGO.SetActive (false);
-			rightShotGO.SetActive (false);
+			foreach (GameObject g in rightSawGO) {
+				g.SetActive (true);
+			}
+
+			foreach (GameObject g in rightRailGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightShotGO) {
+				g.SetActive (false);
+			}
+			foreach (GameObject g in rightGatGO) {
+				g.SetActive (false);
+			}
+
 			break;
 		}
 	}
@@ -393,6 +481,7 @@ public class Player_Script : MonoBehaviour {
 				gatlingBullet.GetComponent<Rigidbody> ().AddForce (gatlingBullet.transform.forward * gatlingBulletForce, ForceMode.Impulse);
 				gatlingBullet.GetComponent<BulletScript> ().damage += (int)gatMod.damageMod;
 				primaryHeat += 1;
+				gatAnim.SetBool ("firing", true);
 				break;
 			case weaponTypes.RAIL:
 				primaryTimer = railCool - railMod.fireRateMod;
@@ -402,40 +491,44 @@ public class Player_Script : MonoBehaviour {
 				railBullet.GetComponent<Rigidbody> ().AddForce (railBullet.transform.forward * railBulletForce, ForceMode.Impulse);
 				railBullet.transform.GetChild (0).gameObject.GetComponent<Rail_Bullet_Script> ().damage += (int)railMod.damageMod;
 				primaryHeat += 15;
+				railAnim.SetBool ("firing", true);
+
 				break;
 			case weaponTypes.SHOT:
 				primaryTimer = shotCool - shotMod.fireRateMod;
 				float forwardOffset = 0.5f;
 				int i = 0;
-				for (i = 0; i < shotCount; i++){
+				for (i = 0; i < shotCount; i++) {
 					GameObject shot = Instantiate (shotBulletTemplate, primaryPoint.transform.position + transform.forward * forwardOffset, Quaternion.identity) as GameObject;
-					Vector3 shotBulletTarget = new Vector3 (Random.Range (targetPosition.x - shotSpread, targetPosition.x + shotSpread), Random.Range (targetPosition.y - shotSpread, targetPosition.y + shotSpread), Random.Range(targetPosition.z - shotSpread, targetPosition.z + shotSpread));
+					Vector3 shotBulletTarget = new Vector3 (Random.Range (targetPosition.x - shotSpread, targetPosition.x + shotSpread), Random.Range (targetPosition.y - shotSpread, targetPosition.y + shotSpread), Random.Range (targetPosition.z - shotSpread, targetPosition.z + shotSpread));
 					shot.transform.LookAt (shotBulletTarget);
 					shot.GetComponent<Rigidbody> ().AddForce (shot.transform.forward * shotBulletForce);
 					shot.GetComponent<BulletScript> ().damage += (int)shotMod.damageMod;
 				}
 
 				primaryHeat += 30;
+				shotAnim.SetBool ("firing", true);
 				break;
 			case weaponTypes.SAW:
 				primaryTimer = sawCool - sawMod.fireRateMod;
-				Collider[] boxCol = Physics.OverlapBox (primaryPoint.transform.position + (transform.forward * 2), new Vector3(sawReach / 2, sawReach / 2, sawReach / 2));
+				Collider[] boxCol = Physics.OverlapBox (primaryPoint.transform.position + (transform.forward * 2), new Vector3 (sawReach / 2, sawReach / 2, sawReach / 2));
 
 
-				foreach (Collider c in boxCol){
+				foreach (Collider c in boxCol) {
 
-					switch (c.gameObject.tag)
-					{
+					switch (c.gameObject.tag) {
 					case "Enemy":
-						if (c.gameObject.GetComponent<Swarm_Script_02>()) {
+						if (c.gameObject.GetComponent<Swarm_Script_02> ()) {
 							c.gameObject.GetComponent<Swarm_Script_02> ().DamageAI (sawDamage + (int)sawMod.damageMod);
 						}
-						if (c.gameObject.GetComponent<AI_Tower_Script>()) {
+						if (c.gameObject.GetComponent<AI_Tower_Script> ()) {
 							c.gameObject.GetComponent<AI_Tower_Script> ().DamageAI (sawDamage + (int)sawMod.damageMod);
 						}
 						break;
 					}
 				}
+
+				sawAnim.SetBool ("firing", true);
 				break;
 			}
 
